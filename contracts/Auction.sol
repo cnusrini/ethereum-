@@ -57,6 +57,7 @@ contract Auction {
         //** End code here. **
 
         bidders[bidderCount].remainingTokens = 5; // only 5 tokens
+
         tokenDetails[msg.sender] = bidders[bidderCount];
         bidderCount++;
     }
