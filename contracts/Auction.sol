@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.17;
 contract Auction {
 
     // Data
@@ -17,52 +17,91 @@ contract Auction {
     }
 
     mapping(address => Person) tokenDetails; //address to person
-    Person [4] bidders;//Array containing 4 person objects
+    Person [4] public bidders;//Array containing 4 person objects
 
     Item [3] public items;//Array containing 3 item objects
     address[3] public winners;//Array for address of winners
     address public beneficiary;//owner of the smart contract
 
-    uint bidderCount=0;//counter
+    uint public bidderCount=0;//counter
 
     //functions
-    function Auction() public payable{    //constructor
 
-        //Part 1 Task 1. Initialize beneficiary with address of smart contract’s owner
-        //Hint. In the constructor,"msg.sender" is the address of the owner.
-        // ** Start code here. 1 line approximately. **/
-        beneficiary = msg.sender; // Part 1 Task1 completed.
+    function Auction() public payable {    //constructor
+
+        beneficiary = msg.sender;
 
         uint[] memory emptyArray;
-
         items[0] = Item({itemId:0,itemTokens:emptyArray});
-        //Part 1 Task 2. Initialize two items with at index 1 and 2.
-        // ** Start code here. 2 lines approximately. **/
         items[1] = Item({itemId:1,itemTokens:emptyArray});
         items[2] = Item({itemId:2,itemTokens:emptyArray});
-      //** End code here**/
 
     }
+
 
     function register() public payable{
 
 
         bidders[bidderCount].personId = bidderCount;
 
-        //Part 1 Task 3. Initialize the address of the bidder
-        /*Hint. Here the bidders[bidderCount].addr should be initialized with address of the registrant.*/
 
-        // ** Start code here. 1 line approximately. **/
         bidders[bidderCount].addr = msg.sender;
-        //** End code here. **
+
 
         bidders[bidderCount].remainingTokens = 5; // only 5 tokens
-
         tokenDetails[msg.sender] = bidders[bidderCount];
         bidderCount++;
     }
 
+    function bid(uint _itemId, uint _count) public payable{
+
+            if((tokenDetails[msg.sender].remainingTokens < _count) || (tokenDetails[msg.sender].remainingTokens == 0)) { revert(); }
+            if(_itemId > 2) { revert(); }
 
 
+        uint balance= tokenDetails[msg.sender].remainingTokens - _count;
+
+
+        tokenDetails[msg.sender].remainingTokens=balance;
+        bidders[tokenDetails[msg.sender].personId].remainingTokens=balance;//updating the same balance in bidders map.
+
+        Item storage bidItem = items[_itemId];
+        for(uint i=0; i<_count;i++) {
+            bidItem.itemTokens.push(tokenDetails[msg.sender].personId);
+        }
+    }
+
+
+    modifier onlyOwner {
+
+        require(beneficiary == msg.sender);
+        _;
+
+    }
+
+
+    function revealWinners() public onlyOwner{
+
+
+        for (uint id = 0; id < 3; id++) {
+            Item storage currentItem=items[id];
+            if(currentItem.itemTokens.length != 0){
+            // generate random# from block number
+            uint randomIndex = (block.number / currentItem.itemTokens.length)% currentItem.itemTokens.length;
+
+
+            uint winnerId = currentItem.itemTokens[randomIndex];
+
+            winners[id] = bidders[winnerId].addr;
+
+
+            }
+        }
+    }
+
+
+    function getPersonDetails(uint id) public constant returns(uint,uint,address){
+        return (bidders[id].remainingTokens,bidders[id].personId,bidders[id].addr);
+    }
 
 }
