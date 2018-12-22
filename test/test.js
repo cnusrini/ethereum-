@@ -1,4 +1,5 @@
 let Auction = artifacts.require("./Auction.sol");
+var assert = require('assert');
 
 let auctionInstance;
 
@@ -22,5 +23,37 @@ contract('AuctionContract', function (accounts) {
       assert.equal(result[2], accounts[1], 'bidder address set');
     })
   });
+
+  //Test Case for checking if the bid is more than the token amount
+it("Should NOT allow to bid more than remaining tokens", function() {
+  /**********
+  TASK 1:   Call bid method from accounts[1] of Auction.sol using auctionInstance and
+  pass itemId=0, count=6 as arguments
+  HINT:     To make a function call from account 1 use {from: accounts[1]} as an extra argument
+  ***********/
+  return auctionInstance.bid(0, 6, {from: accounts[1]})
+  .then(function (result) {
+    /*
+    We are testing for a negative condition and hence this particular block will not have executed if our test case was correct.
+    If this part is executed then we throw an error and catch the error to assert false
+    */
+    throw("Failed to check remaining tokens less than count");
+  }).catch(function (e) {
+    var a = e.toString();
+    if(e === "Failed to check remaining tokens less than count") {
+      /**********
+      TASK 2: This is the error which we had thrown. Should you assert true or false?
+      HINT:   Use assert(false) to assert false
+              Use assert(true) to assert true
+      ***********/
+      assert(true);
+    } else {
+      /**********
+      TASK 3: assert the opposite here
+      ***********/
+      assert(false);
+    }
+  })
+});
 
 });
