@@ -46,12 +46,12 @@ it("Should NOT allow to bid more than remaining tokens", function() {
       HINT:   Use assert(false) to assert false
               Use assert(true) to assert true
       ***********/
-      assert(true);
+      assert(false);
     } else {
       /**********
       TASK 3: assert the opposite here
       ***********/
-      assert(false);
+      assert(true);
     }
   })
 });
