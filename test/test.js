@@ -56,4 +56,33 @@ it("Should NOT allow to bid more than remaining tokens", function() {
   })
 });
 
+//Modifier Checking
+it("Should NOT allow non owner to reveal winners", function() {
+  /**********
+  TASK 4: Call revealWinners from account 1
+  ***********/
+   return auctionInstance.revealWinners({from: accounts[1]})
+   .then(function (instance) {
+     /*
+     We are testing for a negative condition and hence this particular block will not have executed if our test case was correct.
+     If this part is executed then we throw an error and catch the error to assert false
+     */
+     throw("Failed to check owner in reveal winners");
+   }).catch(function (e) {
+     if(e === "Failed to check owner in reveal winners") {
+       /**********
+       TASK 5: This is the error which we had thrown. Should you assert true or false?
+       HINT:   Use assert(false) to assert false
+               Use assert(true) to assert true
+       ***********/
+       assert(true);
+     } else {
+       /**********
+       TASK 6: assert the opposite here
+       ***********/
+       assert(false);
+     }
+   })
+ });
+
 });
